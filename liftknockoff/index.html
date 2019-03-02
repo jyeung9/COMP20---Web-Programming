@@ -10,21 +10,42 @@
 		</script>
 		<link rel="stylesheet" href="geolocation_map_style.css" />
 		<script>
+			console.log("here i am 1");
 			var http = new XMLHttpRequest();
 			var url = 'https://hans-moleman.herokuapp.com/rides';
 			var params = "username=cqgUgd9M&lat=42.4069238&lng=-71.1188082";
 
-			http.open('POST',url,true);
+			//http.open('POST',url,true);
+			http.open("GET", "https://messagehub.herokuapp.com/messages.json", true);
 
 			http.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-
+			console.log("here i am 2");
+			//--------------------------
 			http.onreadystatechange = function(){
+				if(http.readyState == 4){
+					console.log("here i am 3");
+				}
 				if(http.readyState == 4 && http.status == 200) {
+					console.log("here i am 4");
+					parsedMessage = JSON.parse(http.responseText);
+					messages = document.getElementById("map_canvas");
+					messages.innerHTML = "";
+					for (count = 0; count < parsedMessage.length ; count++) {
+						console.log(parsedMessage[count].content);
+						console.log(parsedMessage[count].username)
+						messages.innerHTML += "<p>" + parsedMessage[count].content + " from " + parsedMessage[count].username + "</p>";
+
+
+					}
+					console.log("parsed stuff ");
+					alert(messages.innerHTML);
+
 					alert(http.responseText);
 				}
 			}
 			http.send(params);
 
+			//--------------------------
 			var myLat = 0;
 			var myLng = 0;
 			var me = new google.maps.LatLng(myLat, myLng);
@@ -37,24 +58,57 @@
 			var marker;
 			var infowindow = new google.maps.InfoWindow();
 			function init() {
+				console.log("inside init()");
 				map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 				getMyLocation();
 			}
+
+			//------------------------
 			function getMyLocation() {
+				console.log("I am here 1");
 				if (navigator.geolocation) { // the navigator.geolocation object is supported on your browser
 					navigator.geolocation.getCurrentPosition(function(position) {
+						console.log("I am here 2");
 						myLat = position.coords.latitude;
 						myLng = position.coords.longitude;
 						renderMap();
 						console.log(myLat,myLng);
-						console.log(myLng);
+	
 					});
 				}
 				else {
 					alert("Geolocation is not supported by your web browser.  What a shame!");
 				}
 			}
+
+			//--------------------------
+			Number.prototype.toRad = function() {
+   				return this * Math.PI / 180;
+			}
+
+			var lat2 = 42.741; 
+			var lon2 = -71.3161; 
+			var lat1 = 42.806911; 
+			var lon1 = -71.290611; 
+
+			var R = 6371; // km 
+			//has a problem with the .toRad() method below.
+			var x1 = lat2-lat1;
+			var dLat = x1.toRad();  
+			var x2 = lon2-lon1;
+			var dLon = x2.toRad();  
+			var a = Math.sin(dLat/2) * Math.sin(dLat/2) + 
+			                Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) * 
+			                Math.sin(dLon/2) * Math.sin(dLon/2);  
+			var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+			var d = R * c; 
+
+			console.log("before alert");
+			alert(d);
+
+			//--------------------------
 			function renderMap() {
+				console.log("inside renderMap");
 				me = new google.maps.LatLng(myLat, myLng);
 				// Update map and go there...
 				map.panTo(me);
@@ -65,6 +119,7 @@
 					title: "Here I Am!"
 				});
 				marker.setMap(map);
+				marker.setIcon("pusheen.png");	// customize marker
 					
 				// Open info window on click of marker
 				google.maps.event.addListener(marker, 'click', function() {
@@ -76,6 +131,6 @@
 	</head>
 	
 	<body onload="init()">
-		<div id="map_canvas"></div>
+		<div id="map_canvas">Loading...</div>
 	</body>
 </html>
