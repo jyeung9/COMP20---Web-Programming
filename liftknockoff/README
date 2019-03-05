@@ -1,12 +1,34 @@
 README
 Julie Yeung
+March 05, 2019
 
-1. What implemented correctly was 
+1. Some things that were implemented correctly:
+- parsing the json response text
+- displaying the marker for closest vehicle, weinermobile on marker click
+- displaying the markers for the vehicle, passenger, weinermobile
+- displaying more than one weinermobile, and displaying each one's distance 
+correctly
+- displaying the vehicle markers correctly, with their usernames and their 
+distance from me
+- displaying the me marker's distance from the closest vehicle correctly, 
+along with username and closest weinermobile
+- displaying the passenger markers, their usernames, and their distances from
+me
 
-Some things that were implemented correctly:
-- 
+Some things that were not implemented correctly (but I fixed): 
+- I copy/pasted the code over from when I was a passenger; I had an error 
+where the "weiner" and "passenger" objects weren't recognized. That was because
+I had not changed some of the array and indice names.
+- upon clicking the me marker: 
+the distance from closest passenger is a weinermobile when there are no
+available passengers -- not sure if it will compute distance when there
+are actually passengers
+- accessing the elements inside the vehicle/passenger array -- keeps saying 
+"passenger" is undefined but I had same implementation for "vehicles"
 
-Some things that did not implement correctly included: 
-- the distance between the closest vehicle and my vehicle: that was because the ...
-- displaying the markers on the map correctly: I needed separate functions 
-- accessing the elements inside the vehicle array
+
+2. Acknowledgments: I talked with TA's Julianna, Kingsley, and Min, 
+who all helped me tremendously. I also credit StackOverflow for the Haversine
+formula code.
+
+3. I spent over 20 hours on this assignment (I lost count)

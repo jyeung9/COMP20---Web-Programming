@@ -14,6 +14,7 @@
 			var weiner_pos;
 			var closest_weiner;
 			var currWeinerMin;
+			var weiner_exist = false;
 			var weiner = {username: "", lat: 0, lng: 0};
 
 			var vehicle_marker;
@@ -62,35 +63,15 @@
 				me = new google.maps.LatLng(myLat, myLng);
 				// Update map and go there...
 				map.panTo(me);
-				
-				// Create a marker
-				console.log("my position: " + me);
+
 				marker = new google.maps.Marker({
 					position: me,
 					title: "Username: cqgUgd9M"
 				});
+
 				marker.setMap(map);
 				marker.setIcon("pusheen.png");	// customize marker
-					
-				// Open info window on click of marker
 
-				for(i = 0; i < all_vehicles.length; i++){
-					if(all_vehicles[i].vehicle){
-
-						vehicle_pos = new google.maps.LatLng(all_vehicles[i].vehicle.lat, all_vehicles[i].vehicle.lng);
-						vehicle_marker = new google.maps.Marker({
-							position: vehicle_pos,
-							title: "hi"
-						});
-						vehicle_marker.setMap(map);
-						vehicle_marker.setIcon("car.png");
-					}
-
-					google.maps.event.addListener(vehicle_marker, 'click', function() {
-							infowindow.setContent(vehicle_marker.title);
-							infowindow.open(map, vehicle_marker);
-						});
-				}
 			}
 
 			function request(){
@@ -103,16 +84,15 @@
 				http.onreadystatechange = function(){
 
 					if(http.readyState == 4 && http.status == 200) {
-						console.log("here i am 4");
 						parsedMessage = JSON.parse(http.responseText);	// array of vehicles 
 	
 						alert(http.responseText);
 							// push objects to appropriate arrays
 							if(parsedMessage["vehicles"]){
 								isVehicle = true;
-								console.log("entered vehicles");
 								for (i = 0; i < parsedMessage["vehicles"].length; i++){
 									if (parsedMessage["vehicles"][i].username == "WEINERMOBILE"){
+										weiner_exist = true;
 										weiner = {username: "WEINERMOBILE", lat: parsedMessage["vehicles"][i].lat, lng: parsedMessage["vehicles"][i].lng};
 
 										all_vehicles.push({
@@ -148,48 +128,50 @@
 									}
 								}
 
-								google.maps.event.addListener(marker, 'click', function() {
-									infowindow.setContent(this.title + " Distance from closest vehicle: " + min + " Distance from Closest Weinermobile: " + closest_weiner);
-									infowindow.open(map, this);
-								});
+								if (weiner_exist){
+									google.maps.event.addListener(marker, 'click', function(){
+										infowindow.setContent(this.title + " Distance from closest passenger: " + min + " The Weinermobile is  " + closest_weiner + " miles away from me!");
+										infowindow.open(map, this);
+									});
+								}
+								else {
+									google.maps.event.addListener(marker, 'click', function(){
+										infowindow.setContent(this.title + " Distance from closest passenger: " + min + " The Weinermobile is nowhere to be seen!");
+										infowindow.open(map, this);
+									});
+								}
+										
 							}
 
 							// handling passenger case
 							if(parsedMessage["passengers"]){
-
 								isVehicle = false;
-								console.log("entered passengers");
-
 								for (j = 0; j < parsedMessage["passengers"].length; j++){
 									if (parsedMessage["passengers"][j].username == "WEINERMOBILE"){
+										weiner_exist = true;
 										weiner = {username: "WEINERMOBILE", lat: parsedMessage["passengers"][j].lat, lng: parsedMessage["passengers"][j].lng};
-
-										all_vehicles.push({
+										all_passengers.push({
 											weiner
-										})				
+										})	
+		
 										renderWeiner();
 									}
 									else{
-
 										passenger = {username: parsedMessage["passengers"][j].username, lat: parsedMessage["passengers"][j].lat, lng: parsedMessage["passengers"][j].lng};
-										console.log(passenger.username);
-										console.log(passenger.lat);
-										console.log(passenger.lng);
 										all_passengers.push({
 											passenger
 										})
-										console.log(passenger.username);
 										renderPassenger();
-
 									}
 								}
 
 								// finding closest weinermobile, passenger
 								closest_weiner = checkDistance(parsedMessage["passengers"][0].lat, parsedMessage["passengers"][0].lng);
 								min = checkDistance(parsedMessage["passengers"][0].lat, parsedMessage["passengers"][0].lng);
-
+				
 								for (count = 1; count < parsedMessage["passengers"].length; count++) {
 									if(parsedMessage["passengers"].username == "WEINERMOBILE"){
+										weinerExists = true;
 										currWeinerMin = checkDistance(parsedMessage["passengers"][count].lat, parsedMessage["passengers"][count].lng);
 										if(currentWeinerMin < closest_weiner){
 											closest_weiner = currentWeinerMin;
@@ -202,10 +184,19 @@
 									}
 								}
 
-								google.maps.event.addListener(marker, 'click', function() {
-									infowindow.setContent(this.title + " Distance from closest passenger: " + min + " Distance from Closest Weinermobile: " + closest_weiner);
-									infowindow.open(map, this);
-								});
+									if (weiner_exist){
+										google.maps.event.addListener(marker, 'click', function() {
+											infowindow.setContent(this.title + " Distance from closest passenger: " + min + " The Weinermobile is  " + closest_weiner + " miles away from me!");
+											infowindow.open(map, this);
+										});
+									}
+									else {
+										google.maps.event.addListener(marker, 'click', function() {
+											infowindow.setContent(this.title + " Distance from closest passenger: " + min + " The Weinermobile is nowhere to be seen!");
+											infowindow.open(map, this);
+										});
+									}
+	
 							}
 					}
 				}
@@ -213,31 +204,46 @@
 			}
 
 			//--------------------------
-			function renderWeiner() {
-				console.log("inside renderweiner");
-				weiner_pos = new google.maps.LatLng(all_vehicles[i].weiner.lat, all_vehicles[i].weiner.lng);
-				map.panTo(weiner_pos);
-				weiner_marker = new google.maps.Marker({
-					position: weiner_pos,
-					title: "Username: WEINERMOBILE" + " Distance from me: " + checkDistance(all_vehicles[i].weiner.lat, all_vehicles[i].weiner.lng)
-				});
+			function renderWeiner() {				
+				if (isVehicle){
+					weiner_pos = new google.maps.LatLng(all_vehicles[i].weiner.lat, all_vehicles[i].weiner.lng);
+					weiner_marker = new google.maps.Marker({
+						position: weiner_pos,
+						title: "Username: WEINERMOBILE" + " Distance from you: " + checkDistance(all_vehicles[i].weiner.lat, all_vehicles[i].weiner.lng)
+					});
 
-				weiner_marker.setMap(map);
-				weiner_marker.setIcon("weinermobile.png");
+					weiner_marker.setMap(map);
+					weiner_marker.setIcon("weinermobile.png");
 
-				google.maps.event.addListener(weiner_marker, 'click', function() {
-					infowindow.setContent(this.title);
-					infowindow.open(map, this);
-				});
+					google.maps.event.addListener(weiner_marker, 'click', function() {
+						infowindow.setContent(this.title);
+						infowindow.open(map, this);
+					});
+				}
+
+				else{ 
+					weiner_pos = new google.maps.LatLng(all_passengers[j].weiner.lat, all_passengers[j].weiner.lng);
+					weiner_marker = new google.maps.Marker({
+						position: weiner_pos,
+						title: "Username: WEINERMOBILE" + " Distance from you: " + checkDistance(all_passengers[j].weiner.lat, all_passengers[j].weiner.lng)
+					});
+
+					weiner_marker.setMap(map);
+					weiner_marker.setIcon("weinermobile.png");
+
+					google.maps.event.addListener(weiner_marker, 'click', function() {
+						infowindow.setContent(this.title);
+						infowindow.open(map, this);
+					});
+				}
 			}
 
 			function renderVehicle() {
-
 				vehicle_pos = new google.maps.LatLng(all_vehicles[i].vehicle.lat, all_vehicles[i].vehicle.lng);
-				//map.panTo(vehicle_pos);
+
 				vehicle_marker = new google.maps.Marker({
 					position: vehicle_pos,
-					title: "Username: " + all_vehicles[i].vehicle.username + " Distance from me: " + checkDistance(all_vehicles[i].vehicle.lat, all_vehicles[i].vehicle.lng)
+					title: "Username: " + all_vehicles[i].vehicle.username + " Distance from you: " + checkDistance(all_vehicles[i].vehicle.lat, all_vehicles[i].vehicle.lng)
 				});
 
 				vehicle_marker.setMap(map);
@@ -250,26 +256,23 @@
 			}
 
 			function renderPassenger(){
-				console.log("inside render pass");
-				console.log(all_passengers[j].passenger.lat);
 				pass_pos = new google.maps.LatLng(all_passengers[j].passenger.lat, all_passengers[j].passenger.lng);
-				//map.panTo(pass_pos);
 				passenger_marker = new google.maps.Marker({
 					position: pass_pos,
-					title: "Username: " + all_passengers[j].passenger.username + " Distance from me: " + checkDistance(all_passengers[j].passenger.lat, all_passengers[j].passenger.lng)
+					title: "Username: " + all_passengers[j].passenger.username + " Distance from you: " + checkDistance(all_passengers[j].passenger.lat, all_passengers[j].passenger.lng)
 				});
 
 				passenger_marker.setMap(map);
 				passenger_marker.setIcon("pass_pusheen.png");
 
 				google.maps.event.addListener(passenger_marker, 'click', function() {
-					console.log("entered pass");
 					infowindow.setContent(this.title);
 					infowindow.open(map, this);
 				});
 
 			}
 			
+			// FROM STACKOVERFLOW
 			function checkDistance(other_lat, other_lng){
 				Number.prototype.toRad = function() {
 				   return this * Math.PI / 180;
