@@ -1,6 +1,6 @@
 
 			var http = new XMLHttpRequest();
-			var url = 'https://hans-moleman.herokuapp.com/rides';
+			var url = 'https://desolate-meadow-12518.herokuapp.com/rides';
 			var params = "username=cqgUgd9M&lat=42.4069238&lng=-71.1188082";
 			var min;
 			var currentMin;
@@ -130,13 +130,13 @@
 
 								if (weiner_exist){
 									google.maps.event.addListener(marker, 'click', function(){
-										infowindow.setContent(this.title + " Distance from closest passenger: " + min + " The Weinermobile is  " + closest_weiner + " miles away from me!");
+										infowindow.setContent(this.title + " Distance from closest vehicle: " + min + " The Weinermobile is  " + closest_weiner + " miles away from me!");
 										infowindow.open(map, this);
 									});
 								}
 								else {
 									google.maps.event.addListener(marker, 'click', function(){
-										infowindow.setContent(this.title + " Distance from closest passenger: " + min + " The Weinermobile is nowhere to be seen!");
+										infowindow.setContent(this.title + " Distance from closest vehicle: " + min + " The Weinermobile is nowhere to be seen!");
 										infowindow.open(map, this);
 									});
 								}
