@@ -3,3 +3,7 @@
 body{
 	background-color: coral;
 }
+
+.center{
+	justify-content: center;
+}
