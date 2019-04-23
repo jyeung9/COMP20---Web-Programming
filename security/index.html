@@ -42,7 +42,7 @@
 
 			Here, I appended the "[$ne]" database command in order to see if I could access all the data stored in the database that I am not supposed to see. <br> When I typed this in, I was able to see Ming's testing inputs, and location, as shown in this picture: <br><br>
 
-			<p><img src = "retrieved_database_data.png" style=width:1000px class = "center"></p> 
+			<p><img src = "retrieved_database_data.png" style=width:1000px class = "center" alt="database info user is not supposed to see "></p> 
 
 			<h4> Resolution </h4>
 			<p>
@@ -66,7 +66,7 @@
 
 			<p> Allowing users to be able to modify content of the webpage is a serious concern as that could lead to the webpage displaying nonsensical information. It also destroys the functioning of the website as well as content intended for displaying specific information would be stripped of their ability to display that data</p>
 
-			<p><img src = "didn'tFloat.png" style = width:1000px></p>
+			<p><img src = "didn'tFloat.png" style = width:1000px alt="this is the bad data picture"></p>
 
 			<h4> Resolution </h4>
 			She should check whether the input is a numerical value. <br>
@@ -78,17 +78,17 @@
 			
 			 <h4> Location of issue: validation of user, lat, lng data in the POST ./rides route </h4>
 
-			 <h4>Severity: High</h4>
+			 <h4>Severity: High </h4>
 
 			 <h4> Desription of Issue/Proof of Vulnerability</h4>
-			 <p>I curled the following (the spaces in the script tag are so the script popup doesn't activate): <br> 
+			 <p> I curled the following (the spaces in the script tag are so the script popup doesn't activate): <br> 
 			 (curl --data "username=JANET&lat=< script >alert(1)< /script >&lng=THERE https://rocky-inlet-73664.herokuapp.com/"rides)<br>
 
 			 Here, I set the value of the "lat" to a script, which loaded a popup with the number 1; Refer to the picture below: <br>
 
 			</p>
 
-			 <p><img src = "xss_alert.png" style = width:1000px></p>
+			 <p><img src = "xss_alert.png" style = width:1000px alt="this is the cross site scripting popup picture"> </p>
 
 			 <h4> Resolution </h4>
 			 Here, although she does "app.use(cors());" she needs to make sure that the lat/lng/username fields actually receive the values that they are supposed to, and also validate and filter data that the user inputs to the query string. 
@@ -97,6 +97,23 @@
 		</p>
 
 	</p>
+
+	<h2> CONCLUSION </h2>
+	<p>
+		In the future, Sandra should pay attention to the following: never trust user input, make sure 
+		her program accepts the right type of data, and make sure that not just everyone would be allowed to access sensitive information. In order to account for XSS and injection attacks, Sandra should always check to see whether user input 
+		is a valid type, and disallow users to insert their own scripts. 
+
+	</p>
+	<h2> REFERENCES </h2>
+
+	<p>On XSS: https://www.veracode.com/security/xss <br>
+	   My Partner Sandra Alguacil's source code for Assignment 3. <br>
+	   parseFloat() function: https://www.w3schools.com/jsref/jsref_parsefloat.asp <br>
+
+	</p>
+
+
 
 </body>
 </html>

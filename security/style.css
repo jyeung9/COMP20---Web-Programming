@@ -2,8 +2,14 @@
 
 body{
 	background-color: coral;
+	padding-left: 50px;
+	padding-right: 50px;
 }
 
 .center{
 	justify-content: center;
+}
+
+h2{
+	text-align: center;
 }
