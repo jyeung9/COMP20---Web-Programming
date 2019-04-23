@@ -11,9 +11,78 @@
 
 <body>
 	<h1> Web Programming, Assignment 4: Security Testing and Writeup </h1>
-	<h3>INTRODUCTION</h3>
-	<p> I was assigned to a partner -- Sandra Alguacil -- and hired to hack into her Assignment 3 Server Side Assignment <br>
-		In testing and hacking into her application, I plan to perform injection attacks and XSS attacks. In order to perform those attacks, I will assign values to the keys in the URL query strings that the client should not be able to access
-		(such as database information), I will play around with how robust her code was in dealing with different data types, and I will insert alert scripts through curling as well. </p>
+	<h2>INTRODUCTION</h2>
+	<p> I was assigned to a partner -- Sandra Alguacil -- and hired by Ming to hack into her Assignment 3 Server Side Assignment. <br>
+		In testing and hacking into her application, I plan to perform injection attacks and XSS attacks. <br> 
+		In order to perform those attacks, I will assign values to the keys in the URL query strings that the client should not be able to access (such as database information), I will play around with how robust her code was in dealing with different data types, and I will insert alert scripts through curling as well. </p>
+
+	<h2> ABSTRACT OF FINDINGS </h2>
+	<p> In testing Sandra's program, I found a couple of security issues. The first security breach involved not denying people from accessing data that they are not supposed to access. The second security breach involved not converting
+	user input to the correct data/disallowing from inputting certain data types in certain fields. More specifically, Sandra had allowed users to type in words in the "lat" and "lng" fields, which are only inteded for numerical values. Finally,
+	the last issue I had found in her program put users at risk. Usually, web applications should adhere to the Single-Origin Policy; that is, only allowing her own web application to retrieve content. However, Sandra's program allows hackers to easily insert their own code into her HTML webpage. This would result in her web page running potentially malicious programs from other websites that put the user at risk.
+	</p>
+
+	<h2> ISSUES FOUND </h2>
+	<p>
+		<h3> Issue 1: Injection, retrieval of database information </h3>
+		<p>
+			I modified her query string to the following: <br>
+			"https://rocky-inlet-73664.herokuapp.com/passenger.json?username[$ne]" <br><br>
+
+			<p> This is BAD because users can then see all input/requests that have been made to the server and access
+			private information such as other people's locations </p>
+
+			<h4> Location of issue:</h4> <p>Query string</p>
+
+			<h4> Severity: High </h4>
+			<p>Allowing users to be able to access all the data stored in the database is an extreme violation of privacy. It allows everyone to access sensitive information of all other users. </p>
+
+			<h4> Description of issue/Proof of Vulnerability </h4>
+			Here, I appended the "[$ne]" database command in order to see if I could access all the data stored in the database that I am not supposed to see. <br> When I typed this in, I was able to see Ming's testing inputs, as shown in this picture: <br><br>
+
+			<p><img src = "retrieved_database_data.png" style=width:1000px></p> 
+
+			<h4> Resolution </h4>
+			<p>
+				The lesson here is to never trust user input. She might try validating user input on the server side in order to block off malicious inputs. 
+			</p>
+
+		</p>
+		<h3> Issue 2: Injection, bad data processing </h3>
+		<p>
+			<h4>Location of issue: </h4>
+
+			<h4> Severity: High </h4>
+			<p> Allowing users to be able to modify content of the webpage is a serious concern as that could lead to the webpage displaying nonsensical information. It also destroys the functioning of the website as well as content intended for displaying specific information would be stripped of their ability to display that data</p>
+
+			<h4>Description of issue/Proof of Vulnerability</h4>
+
+			I curled the following: <br>
+			curl --data "username=JANET&lat=HELLO&lng=THERE" https://rocky-inlet-73664.herokuapp.com/rides <br>
+
+			Here, I entered string "HELLO" for the lat field, and "THERE" for the lng field. The lat and lng field are supposed to only take in numerical values; however, her program allowed for me to input string values. The picture 
+			is below: <br>
+
+			<p> This is also BAD because... </p>
+
+			<p><img src = "didn'tFloat.png" style = width:1000px></p>
+
+			
+ 
+		</p>
+		<h3> Issue 3: Injection, XSS Attack </h3>
+		<p>
+			 I curled the following (the spaces in the script tag are so the script popup doesn't activate): <br> 
+			 (curl --data "username=JANET&lat=< script >alert(1)< /script >&lng=THERE https://rocky-inlet-73664.herokuapp.com/"rides)<br>
+
+			 Here, I set the value of the "lat" to a script, which loaded a popup with the number 1; Refer to the picture below: <br>
+
+			 <p><img src = "xss_alert.png" style = width:1000px></p>
+
+
+		</p>
+
+	</p>
+
 </body>
 </html>
