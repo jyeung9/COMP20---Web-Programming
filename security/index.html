@@ -66,7 +66,7 @@
 
 			<p> Allowing users to be able to modify content of the webpage is a serious concern as that could lead to the webpage displaying nonsensical information. It also destroys the functioning of the website as well as content intended for displaying specific information would be stripped of their ability to display that data</p>
 
-			<p><img src = "didn'tFloat.png" style = width:1000px alt="this is the bad data picture"></p>
+			<p><img src = "didn'tFloat.png" style = width:1000px alt="bad data picture"></p>
 
 			<h4> Resolution </h4>
 			She should check whether the input is a numerical value. <br>
@@ -78,17 +78,19 @@
 			
 			 <h4> Location of issue: validation of user, lat, lng data in the POST ./rides route </h4>
 
-			 <h4>Severity: High </h4>
+			 <h4>Severity: Medium </h4>
 
 			 <h4> Desription of Issue/Proof of Vulnerability</h4>
 			 <p> I curled the following (the spaces in the script tag are so the script popup doesn't activate): <br> 
 			 (curl --data "username=JANET&lat=< script >alert(1)< /script >&lng=THERE https://rocky-inlet-73664.herokuapp.com/"rides)<br>
 
+			 The user really is not supposed to be able to assign string values to a numerical variable such as "lat" and "lng." In allowing users to do so, she allows them to modify contents of the web to display nonsensical information (lat = "HELLO" makes no sense).
+			 
 			 Here, I set the value of the "lat" to a script, which loaded a popup with the number 1; Refer to the picture below: <br>
 
 			</p>
 
-			 <p><img src = "xss_alert.png" style = width:1000px alt="this is the cross site scripting popup picture"> </p>
+			 <p><img src = "xss_alert.png" style = width:1000px alt="cross site scripting popup picture"> </p>
 
 			 <h4> Resolution </h4>
 			 Here, although she does "app.use(cors());" she needs to make sure that the lat/lng/username fields actually receive the values that they are supposed to, and also validate and filter data that the user inputs to the query string. 
@@ -107,9 +109,10 @@
 	</p>
 	<h2> REFERENCES </h2>
 
-	<p>On XSS: https://www.veracode.com/security/xss <br>
-	   My Partner Sandra Alguacil's source code for Assignment 3. <br>
-	   parseFloat() function: https://www.w3schools.com/jsref/jsref_parsefloat.asp <br>
+	<p> <li>On XSS: https://www.veracode.com/security/xss </li> <br>
+	   <li>Preventing XSS Attacks: https://www.wordfence.com/learn/how-to-prevent-cross-site-scripting-attacks/ </li> <br>
+	   <li> My Partner Sandra Alguacil's source code for Assignment 3. </li> <br>
+	   <li> parseFloat() function: https://www.w3schools.com/jsref/jsref_parsefloat.asp </li><br>
 
 	</p>
 
